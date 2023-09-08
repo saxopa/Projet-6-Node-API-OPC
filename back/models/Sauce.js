@@ -8,8 +8,8 @@ const sauceSchema = mongoose.Schema({
     mainPepper: { type: String, required: true},
     imageUrl: { type: String, required: true},
     heat: { type: Number, required: true},
-    likes: { type: Number, required: true},
-    dislikes: { type: Number, required: true},
+    likes: {default:0, type: [], required: true},
+    dislikes: {default:0, type: [], required: true},
 
 
 
