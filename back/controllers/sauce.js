@@ -21,9 +21,10 @@ exports.deleteSauce = (req, res, next) => {
   })
 };
 
- // User is updating a sauce he created
+ // L'utilisateur peut modifier une sauce qu'il a créée
 exports.updateSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id }).then((sauce) => {
+      // If the user is changing the image
       const filename = sauce.imageUrl.split("/images/")[1];
       fs.unlink(`images/${filename}`, () => {
         const sauceObject = req.file
@@ -78,3 +79,29 @@ exports.createSauce =  (req, res, next) =>{
   .then(()=>{res.status(200).json({message: 'objet enregistré'})})
   .catch(error => {res.status(400).json({error})});
 };
+
+exports.likeSauce = (req, res, next) => {
+  var like = req.body.like;
+  var userId = req.body.userId;
+  var sauceId = req.params.id;
+  if (like == 1) {
+    Sauce.updateOne(
+      { _id: sauceId },
+      {
+        $push: { usersLiked: userId },
+        $inc: { likes: +1 },
+      }
+    )
+      .then(() => res.status(200).json({ message: "Like ajouté" }))
+      .catch((error) => res.status(400).json({ error }));
+  } else if (like == -1) {
+    Sauce.updateOne(
+      { _id: sauceId },
+      {
+        $push: { usersDisliked: userId },
+        $inc: { dislikes: +1 },
+      }
+    )
+      .then(() => res.status(200).json({ message: "Dislike ajouté" }))
+      .catch((error) => res.status(400).json({ error }));
+}}
