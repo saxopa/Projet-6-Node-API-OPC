@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const path = require('path');
+const fs = require('fs');
 
 const userRoutes = require('./routes/user');
 const sauceRoutes = require('./routes/sauce');
@@ -26,8 +27,14 @@ app.use((req, res, next) => {
     next();
 });
 
+//create images file if doesnt exist
+if (!fs.existsSync('./images')) {
+  fs.mkdirSync('./images');
+}
+
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
 app.use('/images', express.static(path.join(__dirname, 'images')));
+
 
 module.exports = app;

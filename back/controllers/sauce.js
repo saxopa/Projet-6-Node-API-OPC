@@ -84,24 +84,37 @@ exports.likeSauce = (req, res, next) => {
   var like = req.body.like;
   var userId = req.body.userId;
   var sauceId = req.params.id;
-  if (like == 1) {
-    Sauce.updateOne(
-      { _id: sauceId },
-      {
-        $push: { usersLiked: userId },
-        $inc: { likes: +1 },
-      }
-    )
-      .then(() => res.status(200).json({ message: "Like ajouté" }))
-      .catch((error) => res.status(400).json({ error }));
-  } else if (like == -1) {
-    Sauce.updateOne(
-      { _id: sauceId },
-      {
-        $push: { usersDisliked: userId },
-        $inc: { dislikes: +1 },
-      }
-    )
-      .then(() => res.status(200).json({ message: "Dislike ajouté" }))
-      .catch((error) => res.status(400).json({ error }));
-}}
+  Sauce.findOne({ _id: sauceId }).then((sauce) => {
+    const sauceUpdate = {
+      usersLiked: sauce.usersLiked,
+      usersDisliked: sauce.usersDisliked,
+      likes: 0,
+      dislikes: 0,
+    };
+    switch (like) {
+      case 1: // Si il s'agit d'un like
+        sauceUpdate.usersLiked.push(userId);
+        break;
+      case -1: // Si il s'agit d'un dislike
+        sauceUpdate.usersDisliked.push(userId);
+        break;
+      case 0: // Si il s'agit d'annuler un like ou un dislike
+        if (sauceUpdate.usersLiked.includes(userId)) {
+          const index = sauceUpdate.usersLiked.indexOf(userId);
+          sauceUpdate.usersLiked.splice(index, 1);
+        } else {
+          const index = sauceUpdate.usersDisliked.indexOf(userId);
+          sauceUpdate.usersDisliked.splice(index, 1);
+        }
+        break;
+      default: // En cas d'erreur
+        break;
+    };
+    sauceUpdate.likes = sauceUpdate.usersLiked.length;
+    sauceUpdate.dislikes = sauceUpdate.usersDisliked.length;
+    Sauce.updateOne({ _id: sauceId }, sauceUpdate)
+    .then(() => res.status(200).json({ message: "Sauce notée !" }))
+    .catch(error => res.status(400).json({ error }));
+  })
+  .catch(error => res.status(500).json({ error }));
+}
