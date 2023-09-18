@@ -10,7 +10,7 @@ const sauceRoutes = require('./routes/sauce');
 
 //Connexion à Mongo DB Atlas
 mongoose.connect(
-  process.env.SECRET_DB,
+  'mongodb+srv://alexispontikis1:ZXwrGTvHE1MVB28y@cluster0.zgymlz2.mongodb.net/?retryWrites=true&w=majority',
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
