@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
+require('dotenv').config();
 
 const userRoutes = require('./routes/user');
 const sauceRoutes = require('./routes/sauce');
@@ -10,7 +11,7 @@ const sauceRoutes = require('./routes/sauce');
 
 //Connexion à Mongo DB Atlas
 mongoose.connect(
-  'mongodb+srv://alexispontikis1:ZXwrGTvHE1MVB28y@cluster0.zgymlz2.mongodb.net/?retryWrites=true&w=majority',
+  process.env.DB_SECRET,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
